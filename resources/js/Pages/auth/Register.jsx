@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { router, Head, Link, useForm } from '@inertiajs/react'
+import { router, Head, Link, useForm, usePage } from '@inertiajs/react'
 import LayoutAuth from './partials/Layouts'
 
 export default function Register() {
@@ -11,7 +11,6 @@ export default function Register() {
     })
 
     const { flash } = usePage().props
-    console.log(flash)
 
     function submit(e) {
         e.preventDefault()
@@ -28,7 +27,7 @@ export default function Register() {
             }}>Hey, Hallo 👋</h4>
             <p className='text-secondary'>Temukan dan berbagi resep makanan</p>
             {
-                flash.fail && (
+                flash?.fail && (
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         {flash.fail}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
