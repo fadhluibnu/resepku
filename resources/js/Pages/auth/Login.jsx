@@ -8,7 +8,7 @@ export default function Login({session}) {
         password: '',
     })
     const { flash } = usePage().props
-    // console.log(flash.success)
+    
     function submit(e) {
         e.preventDefault()
         post('/login')
@@ -24,13 +24,20 @@ export default function Login({session}) {
                 color: '#141632'
             }}>Hey, Hallo 👋</h4>
             <p className='text-secondary'>Temukan dan berbagi resep makanan</p>
-            {/* {
-                flash.success &&
-                <div className="alert alert-danger alert-dismissible fade show" role="alert">
+            {
+                flash?.success &&
+                <div className="alert alert-success alert-dismissible fade show" role="alert">
                     {flash.success}
                     <button type="button" className="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
-            } */}
+            }
+            {
+                flash?.fail &&
+                <div className="alert alert-danger alert-dismissible fade show" role="alert">
+                    {flash.fail}
+                    <button type="button" className="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
             <form onSubmit={submit}>
                 <div className="mb-3">
                     <label for="exampleInputEmail1" className="form-label fw-medium" style={{

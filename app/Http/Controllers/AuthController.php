@@ -24,9 +24,9 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            return redirect()->intended('home');
+            return redirect()->route('home');
         }
-        return back()->with('error', 'Invalid Login');
+        return to_route('login')->with('fail', 'Invalid Login');
     }
     public function registerView()
     {
@@ -43,8 +43,18 @@ class AuthController extends Controller
         $credentials['password'] = Hash::make($credentials['password']);
         if (User::create($credentials)) {
             return redirect()->route('login')->with('success', 'Registration successfull!');
-        }else{
+        } else {
             return to_route('register')->with('fail', 'Registration failed!');
         }
+    }
+    public function logout(Request $request)
+    {
+        Auth::logout();
+
+        $request->session()->invalidate();
+    
+        $request->session()->regenerateToken();
+    
+        return redirect()->route('login');
     }
 }
