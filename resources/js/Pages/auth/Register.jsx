@@ -29,9 +29,9 @@ export default function Register() {
             }}>Hey, Hallo 👋</h4>
             <p className='text-secondary'>Temukan dan berbagi resep makanan</p>
             {/* {
-                session.fail && (
+                flash.fail && (
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        {session.fail}
+                        {flash.fail}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 )

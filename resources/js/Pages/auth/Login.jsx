@@ -25,9 +25,9 @@ export default function Login({session}) {
             }}>Hey, Hallo 👋</h4>
             <p className='text-secondary'>Temukan dan berbagi resep makanan</p>
             {/* {
-                session.success &&
+                flash.success &&
                 <div className="alert alert-danger alert-dismissible fade show" role="alert">
-                    {session.success}
+                    {flash.success}
                     <button type="button" className="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             } */}
