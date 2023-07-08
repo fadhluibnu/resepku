@@ -1,13 +1,14 @@
 import { useState } from 'react'
-import { router, Head, Link, useForm } from '@inertiajs/react'
+import { router, Head, Link, useForm, usePage } from '@inertiajs/react'
 import LayoutAuth from './partials/Layouts'
 
-export default function Login() {
+export default function Login({session}) {
     const { data, setData, post, processing, errors } = useForm({
         email: '',
         password: '',
     })
-
+    const { flash } = usePage().props
+    // console.log(flash.success)
     function submit(e) {
         e.preventDefault()
         post('/login')
@@ -23,6 +24,13 @@ export default function Login() {
                 color: '#141632'
             }}>Hey, Hallo 👋</h4>
             <p className='text-secondary'>Temukan dan berbagi resep makanan</p>
+            {/* {
+                session.success &&
+                <div className="alert alert-danger alert-dismissible fade show" role="alert">
+                    {session.success}
+                    <button type="button" className="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            } */}
             <form onSubmit={submit}>
                 <div className="mb-3">
                     <label for="exampleInputEmail1" className="form-label fw-medium" style={{
