@@ -1,43 +1,68 @@
-import { Head, useForm } from "@inertiajs/react"
-import Layout from "../Partials/Layouts"
-import { useEffect, useState } from "react"
-export default function Create({ user }) {
-    // input bahan
+import { useEffect, useState } from "react";
+import Layout from "../Partials/Layouts";
+import { Head, useForm } from "@inertiajs/react";
+import { update } from "lodash";
+
+export default function Edit({ resep }) {
+
+    // bahan
     const [idxInpBahan, setIdxInpBahan] = useState([])
     const [valueInpBahan, setValueInpBahan] = useState([])
-    const [jmlhInputBahan, setJmlhInputBahan] = useState(1)
+    const [jmlhInputBahan, setJmlhInputBahan] = useState()
 
     // input langkah langkah
     const [idxInpLangkah, setIdxInpLangkah] = useState([])
     const [valueInpLangkah, setValueInpLangkah] = useState([])
-    const [jmlhInputLangkah, setJmlhInputLangkah] = useState(1)
+    const [jmlhInputLangkah, setJmlhInputLangkah] = useState()
+
+    const [firstRender, setFirstRender] = useState(true);
 
     const { data, setData, post, progress, processing, errors } = useForm({
-        user_id: '',
-        judul: '',
-        slug: '',
-        deskripsi: '',
-        bahan: '',
-        langkah: '',
+        id: resep.id,
+        judul: resep.judul,
+        slug: resep.slug,
+        deskripsi: resep.deskripsi,
+        bahan: resep.bahan,
+        langkah: resep.langkah,
         image: null,
-        like: 0,
+        like: resep.like,
     })
-    console.log(errors)
-
-    useEffect(() => {
-        setData('slug', data.judul.split(' ').join('-').toLowerCase())
-    }, [data.judul]);
-
-    useEffect(() => {
-        for (let i = 0; i <= jmlhInputBahan; i++) {
-            idxInpBahan.push(i)
-            valueInpBahan.push('')
+    useEffect(() =>{
+        if (firstRender != true) {
+            setData('slug', data.judul.split(' ').join('-').toLowerCase())
         }
-        for (let i = 0; i <= jmlhInputLangkah; i++) {
-            idxInpLangkah.push(i)
-            valueInpLangkah.push('')
+        setFirstRender(false)
+    }, [data.judul])
+    useEffect(() => {
+        let arrayValueBahan = resep.bahan.split(`\n`)
+        setJmlhInputBahan(arrayValueBahan.length)
+
+        let valueBahan = []
+        let idxBahan = []
+        for (let i = 0; i < arrayValueBahan.length; i++) {
+            let text = arrayValueBahan[i];
+            text = text.split(' ')
+            text.shift()
+            valueBahan.push(text.join(' '))
+            idxBahan.push(i)
         }
-        setData('user_id', user.id)
+        setIdxInpBahan(idxBahan)
+        setValueInpBahan(valueBahan)
+
+        let arrayValueLangkah = resep.langkah.split(`\n`)
+        setJmlhInputLangkah(arrayValueLangkah.length)
+
+        let valueLangkah = []
+        let idxLangkah = []
+        for (let i = 0; i < arrayValueLangkah.length; i++) {
+            let text = arrayValueLangkah[i];
+            text = text.split(' ')
+            text.shift()
+            valueLangkah.push(text.join(''))
+            idxLangkah.push(i)
+        }
+        setIdxInpLangkah(idxLangkah)
+        setValueInpLangkah(valueLangkah)
     }, [])
 
     const updateStateBahan = (value, index) => {
@@ -49,7 +74,11 @@ export default function Create({ user }) {
         }
         setData('bahan', bahan)
     }
-
+    const addInputBahan = () => {
+        setJmlhInputBahan((c) => c + 1)
+        idxInpBahan.push(jmlhInputBahan + 1)
+        valueInpBahan.push('')
+    }
     const updateStateLangkah = (value, index) => {
         valueInpLangkah[index] = value
         let langkah = ''
@@ -59,35 +88,30 @@ export default function Create({ user }) {
         }
         setData('langkah', langkah)
     }
-
-    const addInputBahan = () => {
-        setJmlhInputBahan((c) => c + 1)
-        idxInpBahan.push(jmlhInputBahan + 1)
-        valueInpBahan.push('')
-    }
-
     const addInputLangkah = () => {
         setJmlhInputLangkah((c) => c + 1)
         idxInpLangkah.push(jmlhInputLangkah + 1)
         valueInpLangkah.push('')
     }
-    function submit(e) {
+    function update(e) {
         e.preventDefault()
-        post('/dashboard')
+        post(`/dashboard/${resep.slug}`)
     }
     return (
         <Layout>
-            <Head title="Tulis Resepmu" />
+            <Head title={`${resep.judul} - Edit Resep`} />
             <div className="container mt-3">
-                <form className="px-5" onSubmit={submit}>
+                <form className="px-5" onSubmit={update}>
                     <h3 className='mb-4' style={{
                         color: '#547794'
-                    }}>Tulis Resepmu...</h3>
+                    }}>Edit Resepmu...</h3>
                     <div class="mb-3">
                         <label for="judul" class="form-label fw-medium" style={{
                             color: '#141632'
                         }}>Judul</label>
-                        <input type="text" value={data.judul} onChange={e => setData('judul', e.target.value)} className={`form-control p-2 ${errors.judul && 'is-invalid'}`} id="judul" required />
+                        <input type="text" value={data.judul} onChange={(e) => {
+                            setData('judul', e.target.value)
+                        }} className={`form-control p-2 ${errors.judul && 'is-invalid'}`} id="judul" required />
                         {errors.judul && <div className='invalid-feedback'>{errors.judul}</div>}
                     </div>
                     <div class="mb-3">
@@ -109,20 +133,18 @@ export default function Create({ user }) {
                             color: '#547794'
                         }}>Bahan - bahan</label>
                         {
-                            idxInpBahan.map((idx) => <input type="text" onChange={(e) => updateStateBahan(e.target.value, idx)} className="form-control mb-2 p-2" id="bahan" />)
+                            idxInpBahan.map((idx) => <input type="text" value={valueInpBahan[idx]} onChange={(e) => updateStateBahan(e.target.value, idx)} className="form-control mb-2 p-2" id="bahan" />)
                         }
                         <p className="nav-link text-dark" onClick={() => addInputBahan()} style={{ cursor: 'pointer' }}>+ Item Bahan</p>
-                        <textarea value={data.bahan} className={`form-control p-2 ${errors.bahan && 'is-invalid'}`} id="bahan" required rows="3"></textarea>
                     </div>
                     <div class="mb-3">
                         <label for="langkah" class="form-label fw-semibold" style={{
                             color: '#547794'
                         }}>Langkah - Langkah</label>
                         {
-                            idxInpLangkah.map((idx) => <input type="text" onChange={(e) => updateStateLangkah(e.target.value, idx)} className="form-control mb-2 p-2" id="bahan" />)
+                            idxInpLangkah.map((idx) => <input type="text" value={valueInpLangkah[idx]} onChange={(e) => updateStateLangkah(e.target.value, idx)} className="form-control mb-2 p-2" id="bahan" />)
                         }
                         <p className="nav-link text-dark" onClick={() => addInputLangkah()} style={{ cursor: 'pointer' }}>+ Item Langkah</p>
-                        <textarea value={data.langkah} className={`form-control p-2 ${errors.langkah && 'is-invalid'}`} id="langkah" required rows="3"></textarea>
                     </div>
                     <div class="mb-3">
                         <label for="image" class="form-label fw-medium" style={{
@@ -135,7 +157,7 @@ export default function Create({ user }) {
                     </div>
                     <button type="submit" class="btn order border-0 w-100 text-white text-center fw-medium p-3" style={{
                         backgroundColor: '#547794'
-                    }} disabled={processing}>Terbitkan Resep</button>
+                    }} disabled={processing}>Perbarui Resep</button>
                 </form>
             </div>
         </Layout>

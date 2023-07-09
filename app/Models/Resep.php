@@ -9,7 +9,7 @@ class Resep extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'id_user',
+        'user_id',
         'judul',
         'slug',
         'deskripsi',
